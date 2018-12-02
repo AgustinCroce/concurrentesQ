@@ -1,0 +1,21 @@
+{
+  "name": "concurrentesQ",
+  "version": "1.0.0",
+  "description": "Cola de mensajes para el tp de concurrentes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgustinCroce/concurrentesQ.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AgustinCroce/concurrentesQ/issues"
+  },
+  "homepage": "https://github.com/AgustinCroce/concurrentesQ#readme",
+  "dependencies": {}
+}
