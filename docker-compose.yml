@@ -1,0 +1,38 @@
+version: '2'
+services:
+  broker:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker
+      BROKER_PORT: 1337
+  publisher:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run publisher
+    environment:
+      BROKER_HOST: broker
+      BROKER_PORT: 1337
+  consumer1:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run consumer
+    environment:
+      BROKER_HOST: broker
+      BROKER_PORT: 1337
+  consumer2:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run consumer
+    environment:
+      BROKER_HOST: broker
+      BROKER_PORT: 1337

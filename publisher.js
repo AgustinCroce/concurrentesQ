@@ -1,3 +1,6 @@
+"use strict";
+
+require('dotenv').config();
 const net = require('net'),
     client = new net.Socket();
 
@@ -30,7 +33,7 @@ function spam() {
     }, 2000);
 }
 
-client.connect(1337, '127.0.0.1');
+client.connect(process.env.BROKER_PORT, process.env.BROKER_HOST);
 
 client.on('close', function() {
 	console.log('Connection closed');

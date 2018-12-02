@@ -1,5 +1,6 @@
 "use strict";
 
+require('dotenv').config();
 const net = require('net'),
     queues = {},
     modeMessage = JSON.stringify({type: "modeRequest"}),
@@ -95,5 +96,5 @@ function handleQueue(queue) {
 
 setInterval(handleQueues, 5000)
 
-server.listen(1337, '127.0.0.1');
+server.listen(process.env.BROKER_PORT, process.env.BROKER_HOST);
 console.log("Broker up");
