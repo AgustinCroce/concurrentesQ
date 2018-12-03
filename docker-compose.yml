@@ -9,6 +9,7 @@ services:
     environment:
       BROKER_HOST: broker
       BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 5000
   publisher:
     build:
       context: .
