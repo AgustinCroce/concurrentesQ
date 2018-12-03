@@ -1,6 +1,7 @@
 "use strict";
 
 const WorkQueue = require("./work-queue"),
+  PubSubQueue = require("./pubsub-queue"),
   MODE_MESSAGE = {type: "modeRequest"},
   HANDSHAKE_SUCCESS_MESSAGE = {type: "handshakeSuccess"};
 
@@ -46,12 +47,13 @@ class QueuesRegistry {
 
   processQueues() {
     Object.keys(this.queues)
-        .forEach((queueName) => this.queues[queueName].processNextMessage());
+      .forEach((queueName) => this.queues[queueName].processNextMessage());
   }
 
   addPublisher(queueName, socket) {
     if (!this.queues.hasOwnProperty(queueName)) {
-      this.addWorkQueue(queueName);
+      // this.addWorkQueue(queueName);
+      this.addPubSubQueue(queueName);
     }
 
     this.queues[queueName].addPublisher(socket);
@@ -59,7 +61,8 @@ class QueuesRegistry {
 
   addConsumer(queueName, socket) {
     if (!this.queues.hasOwnProperty(queueName)) {
-      this.addWorkQueue(queueName);
+      // this.addWorkQueue(queueName);
+      this.addPubSubQueue(queueName);
     }
 
     this.queues[queueName].addConsumer(socket);
@@ -68,6 +71,11 @@ class QueuesRegistry {
   addWorkQueue(queueName) {
     const workQueue = new WorkQueue();
     this.queues[queueName] = workQueue;
+  }
+
+  addPubSubQueue(queueName) {
+    const pubsubQueue = new PubSubQueue();
+    this.queues[queueName] = pubsubQueue;
   }
 }
 
