@@ -85,6 +85,19 @@ class QueuesRegistry {
     });
   }
 
+  removeQueue(queueName) {
+    return new Promise((resolve, reject) => {
+      console.log(queueName);
+      if (!this.queues.hasOwnProperty(queueName)) {
+        reject(new Error(`Queue not found`));  
+      }
+      
+      this.queues[queueName].close();
+      Reflect.deleteProperty(this.queues, queueName);
+      resolve();
+    });
+  }
+
   addWorkQueue(queueName, queueSize) {
     const workQueue = new WorkQueue(queueSize);
     this.queues[queueName] = workQueue;

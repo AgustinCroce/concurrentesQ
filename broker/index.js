@@ -14,6 +14,7 @@ setInterval(queueRegistry.processQueues.bind(queueRegistry), process.env.PROCESS
 
 app.use(bodyParser.json());
 app.post("/queues", routes.createQueue);
+app.delete("/queues/:queueName", routes.removeQueue);
 app.listen(process.env.API_PORT);
 
 server.listen(process.env.BROKER_PORT, process.env.BROKER_HOST);

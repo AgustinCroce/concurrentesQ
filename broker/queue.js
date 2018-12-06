@@ -3,6 +3,7 @@
 class Queue {
   constructor(queueSize) {
     this.consumers = [];
+    this.publishers = [];
     this.messages = [];
     this.queueSize = queueSize;
   }
@@ -15,10 +16,19 @@ class Queue {
   removeConsumer(socket) {
     const index = this.consumers.indexOf(socket);
     this.consumers.splice(index, 1);
+    socket.end();
+  }
+
+  removePublisher(socket) {
+    const index = this.publishers.indexOf(socket);
+    this.publishers.splice(index, 1);
+    socket.end();
   }
 
   addPublisher(socket) {
+    this.publishers.push(socket);
     socket.on("data", (buffer) => this.handlePublish(socket, buffer));
+    socket.on("close", () => this.removePublisher(socket))
   }
 
   handlePublish(socket, buffer) { 
@@ -42,6 +52,11 @@ class Queue {
     if (this.hasMessages() && this.hasConsumers()) {
       this.processNextMessageImplementation();
     }
+  }
+
+  close() {
+    this.consumers.forEach((consumer) => this.removeConsumer(consumer));
+    this.publishers.forEach((publisher) => this.removePublisher(publisher));
   }
 }
 
