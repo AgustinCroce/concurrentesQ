@@ -3,7 +3,8 @@
 const WorkQueue = require("./work-queue"),
   PubSubQueue = require("./pubsub-queue"),
   MODE_MESSAGE = {type: "modeRequest"},
-  HANDSHAKE_SUCCESS_MESSAGE = {type: "handshakeSuccess"};
+  HANDSHAKE_SUCCESS_MESSAGE = {type: "handshakeSuccess"},
+  HANDSHAKE_ERROR_MESSAGE = {type: "handshakeError"};
 
 class QueuesRegistry {
   constructor() {
@@ -32,12 +33,10 @@ class QueuesRegistry {
       case "publisher":
         socket.removeAllListeners("data");
         this.addPublisher(message.queue, socket)
-        socket.write(JSON.stringify(HANDSHAKE_SUCCESS_MESSAGE));
       break;
       case "consumer":
         socket.removeAllListeners("data");
         this.addConsumer(message.queue, socket);
-        socket.write(JSON.stringify(HANDSHAKE_SUCCESS_MESSAGE));
       break;
       default:
         socket.destroy(new Error(`Unkown mode ${message.mode}`));
@@ -52,29 +51,47 @@ class QueuesRegistry {
 
   addPublisher(queueName, socket) {
     if (!this.queues.hasOwnProperty(queueName)) {
-      // this.addWorkQueue(queueName);
-      this.addPubSubQueue(queueName);
+      socket.write(JSON.stringify(HANDSHAKE_ERROR_MESSAGE));
+      return socket.end();
     }
 
     this.queues[queueName].addPublisher(socket);
+    socket.write(JSON.stringify(HANDSHAKE_SUCCESS_MESSAGE));
   }
 
   addConsumer(queueName, socket) {
     if (!this.queues.hasOwnProperty(queueName)) {
-      // this.addWorkQueue(queueName);
-      this.addPubSubQueue(queueName);
+      socket.write(JSON.stringify(HANDSHAKE_ERROR_MESSAGE));
+      return socket.end();
     }
 
     this.queues[queueName].addConsumer(socket);
+    socket.write(JSON.stringify(HANDSHAKE_SUCCESS_MESSAGE));
   }
 
-  addWorkQueue(queueName) {
-    const workQueue = new WorkQueue();
+  addQueue(queueName, queueType, queueSize) {
+    return new Promise((resolve, reject) => {
+      if (queueType === "work") {
+        this.addWorkQueue(queueName, queueSize);
+        return resolve();
+      }
+  
+      if (queueType === "pubsub") {
+        this.addPubSubQueue(queueName, queueSize);
+        return resolve();
+      }
+  
+      reject(new Error(`Wrong queue type ${queueType}`));
+    });
+  }
+
+  addWorkQueue(queueName, queueSize) {
+    const workQueue = new WorkQueue(queueSize);
     this.queues[queueName] = workQueue;
   }
 
-  addPubSubQueue(queueName) {
-    const pubsubQueue = new PubSubQueue();
+  addPubSubQueue(queueName, queueSize) {
+    const pubsubQueue = new PubSubQueue(queueSize);
     this.queues[queueName] = pubsubQueue;
   }
 }

@@ -3,8 +3,8 @@
 const Queue = require("./queue");
 
 class PubSubQueue extends Queue {
-  constructor() {
-    super();
+  constructor(queueSize) {
+    super(queueSize);
   }
 
   processNextMessageImplementation() {

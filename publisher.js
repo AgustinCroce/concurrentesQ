@@ -19,6 +19,14 @@ client.on("data", function (buffer) {
         client.removeAllListeners("data");
         spam();
     }
+
+    if (message.type === "handshakeError") {
+        console.log("handshake error");
+    }
+
+    if (message.type === "queueMaximumSizeReached") {
+        console.log("Queue full");
+    }
 });
 
 let i = 0;
@@ -28,6 +36,8 @@ function spam() {
             type: "publish",
             message: `mensajito ${i++}`
         };
+
+        console.log(spamMessage);
 
         client.write(JSON.stringify(spamMessage))
     }, 2000);

@@ -3,8 +3,8 @@
 const Queue = require("./queue");
 
 class WorkQueue extends Queue {
-  constructor() {
-    super();
+  constructor(queueSize) {
+    super(queueSize);
     this.consumerCursor = 0;
   }
 

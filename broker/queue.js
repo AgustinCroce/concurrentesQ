@@ -1,22 +1,33 @@
 "use strict";
 
 class Queue {
-  constructor() {
+  constructor(queueSize) {
     this.consumers = [];
     this.messages = [];
+    this.queueSize = queueSize;
   }
 
   addConsumer(socket) {
     this.consumers.push(socket);
+    socket.on("close", () => this.removeConsumer(socket))
+  }
+
+  removeConsumer(socket) {
+    const index = this.consumers.indexOf(socket);
+    this.consumers.splice(index, 1);
   }
 
   addPublisher(socket) {
-    socket.on("data", this.handlePublish.bind(this));
+    socket.on("data", (buffer) => this.handlePublish(socket, buffer));
   }
 
-  handlePublish(buffer) { 
-    const message = JSON.parse(buffer.toString());
-    this.messages.push(message.message)
+  handlePublish(socket, buffer) { 
+    if (this.messages.length < this.queueSize) {
+      const message = JSON.parse(buffer.toString());
+      this.messages.push(message.message);
+    } else {
+      socket.write(JSON.stringify({type: "queueMaximumSizeReached"}));
+    }
   }
 
   hasMessages() {
