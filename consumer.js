@@ -19,6 +19,10 @@ client.on("data", function (buffer) {
         client.removeAllListeners("data");
         client.on("data", handleMessage);
     }
+
+    if (message.type === "handshakeError") {
+        console.log("handshake error");
+    }
 });
 
 function handleMessage(buffer) {
