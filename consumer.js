@@ -1,5 +1,7 @@
 "use strict";
 
+const cola = "colita";
+
 require('dotenv').config();
 const net = require('net'),
     client = new net.Socket();
@@ -11,7 +13,7 @@ client.on("data", function (buffer) {
         client.write(JSON.stringify({
             type: "mode",
             mode: "consumer",
-            queue: "colita"
+            queue: cola
         }));
     }
 

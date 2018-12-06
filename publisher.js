@@ -1,5 +1,13 @@
 "use strict";
 
+const cola = "colita";
+
+const queueCreation = {queueName:cola,queueType:"pubsub",queueSize:100}
+var request = require('request');
+request.post(`http://${process.env.BROKER_HOST}:3000/queues`, {json:queueCreation}, (error, response, body) => {
+    console.log(response.statusCode);
+});
+
 require('dotenv').config();
 const net = require('net'),
     client = new net.Socket();
@@ -11,7 +19,7 @@ client.on("data", function (buffer) {
         client.write(JSON.stringify({
             type: "mode",
             mode: "publisher",
-            queue: "colita"
+            queue: cola
         }));
     }
 
