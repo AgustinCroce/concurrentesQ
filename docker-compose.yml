@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   broker:
     build:
@@ -10,6 +10,14 @@ services:
       BROKER_HOST: broker
       BROKER_PORT: 1337
       PROCESS_QUEUE_TIME: 5000
+      HEALTH_PORT: 3000
+    ports:
+      - "3000:3000"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
   publisher:
     build:
       context: .
@@ -19,6 +27,8 @@ services:
     environment:
       BROKER_HOST: broker
       BROKER_PORT: 1337
+    depends_on:
+      - "broker"
   consumer1:
     build:
       context: .
@@ -28,6 +38,8 @@ services:
     environment:
       BROKER_HOST: broker
       BROKER_PORT: 1337
+    depends_on:
+      - "broker"
   consumer2:
     build:
       context: .
@@ -37,3 +49,5 @@ services:
     environment:
       BROKER_HOST: broker
       BROKER_PORT: 1337
+    depends_on:
+      - "broker"
