@@ -12,24 +12,16 @@ const net = require("net"),
 
 setInterval(queueRegistry.processQueues.bind(queueRegistry), process.env.PROCESS_QUEUE_TIME)
 
+const api_port = process.env.API_PORT || 3000;
+
 app.use(bodyParser.json());
 app.post("/queues", routes.createQueue);
-app.listen(process.env.API_PORT);
-
-server.listen(process.env.BROKER_PORT, process.env.BROKER_HOST);
-console.log("Broker up");
-
-const express = require('express');
-
-const app = express();
-
-app.set('port', process.env.HEALTH_PORT || 3000);
+app.listen(api_port, function () {
+  console.log(`Health check running on ${api_port} !`);
+});
 
 app.get("/health", (req, res, next) => res.send({status: 'UP'}));
 
-const health_port = process.env.HEALTH_PORT || 3000;
-
-app.listen(health_port, function () {
-  console.log(`Health check running on ${health_port} !`);
-});
+server.listen(process.env.BROKER_PORT, process.env.BROKER_HOST);
+console.log("Broker up");
 

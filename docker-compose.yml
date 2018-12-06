@@ -10,7 +10,7 @@ services:
       BROKER_HOST: broker
       BROKER_PORT: 1337
       PROCESS_QUEUE_TIME: 5000
-      HEALTH_PORT: 3000
+      API_PORT: 3000
     ports:
       - "3000:3000"
     healthcheck:
