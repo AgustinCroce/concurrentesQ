@@ -25,4 +25,6 @@ app.get("/health", (req, res, next) => res.send({status: 'UP'}));
 
 server.listen(process.env.BROKER_PORT, process.env.BROKER_HOST);
 console.log("Broker up");
+//instance solver example
+console.log(require("../instance-solver")("colita"))
 
