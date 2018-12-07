@@ -87,7 +87,6 @@ class QueuesRegistry {
 
   removeQueue(queueName) {
     return new Promise((resolve, reject) => {
-      console.log(queueName);
       if (!this.queues.hasOwnProperty(queueName)) {
         reject(new Error(`Queue not found`));  
       }
