@@ -11,7 +11,9 @@ const request = require('request'),
     queueSize: 100
   };
 
-request.post(`http://${process.env.BROKER_HOST}:${process.env.API_PORT}/queues`, {json:queueCreation}, startClient);
+const instanceSolver = require("./instance-solver")
+
+request.post(`http://${instanceSolver(cola)}:${process.env.API_PORT}/queues`, {json:queueCreation}, startClient);
 
 function startClient(error, response) {
   if (error || response.statusCode !== 200) {
@@ -44,7 +46,7 @@ function startClient(error, response) {
     }
   });
   
-  client.connect(process.env.BROKER_PORT, process.env.BROKER_HOST);
+  client.connect(process.env.BROKER_PORT, instanceSolver(cola));
 
   client.on('close', function() {
 	  console.log('Connection closed');

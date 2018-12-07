@@ -1,13 +1,13 @@
 version: '3'
 services:
-  broker:
+  broker-0:
     build:
       context: .
       dockerfile: ./Dockerfile
     restart: always
     command: npm run broker
     environment:
-      BROKER_HOST: broker
+      BROKER_HOST: broker-0
       BROKER_PORT: 1337
       PROCESS_QUEUE_TIME: 5000
       API_PORT: 3000
@@ -15,6 +15,24 @@ services:
       - "3000:3000"
     healthcheck:
         test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+  broker-1:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker-1
+      BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 5000
+      API_PORT: 3000
+    ports:
+      - "3001:3000"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
         interval: 30s
         timeout: 10s
         retries: 5
@@ -29,7 +47,8 @@ services:
       BROKER_PORT: 1337
       API_PORT: 3000
     depends_on:
-      - "broker"
+      - "broker-0"
+      - "broker-1"
   consumer1:
     build:
       context: .
@@ -40,7 +59,8 @@ services:
       BROKER_HOST: broker
       BROKER_PORT: 1337
     depends_on:
-      - "broker"
+      - "broker-0"
+      - "broker-1"
   consumer2:
     build:
       context: .
@@ -51,4 +71,5 @@ services:
       BROKER_HOST: broker
       BROKER_PORT: 1337
     depends_on:
-      - "broker"
+      - "broker-0"
+      - "broker-1"

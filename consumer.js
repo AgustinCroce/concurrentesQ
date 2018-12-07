@@ -1,5 +1,7 @@
 "use strict";
 
+const instanceSolver = require("./instance-solver")
+
 require("dotenv").config();
 const net = require("net"),
   cola = "colita",
@@ -30,7 +32,7 @@ function handleMessage(buffer) {
   console.log(JSON.parse(buffer.toString()));
 }
 
-client.connect(process.env.BROKER_PORT, process.env.BROKER_HOST);
+client.connect(process.env.BROKER_PORT, instanceSolver(cola));
 
 client.on('close', function() {
 	console.log('Connection closed');
