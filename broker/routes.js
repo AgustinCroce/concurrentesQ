@@ -1,5 +1,7 @@
 "use strict";
 
+const instanceSolver = require("../instance-solver")
+
 module.exports = function getHandlers(queuesRegistry) {
   return {
     createQueue(req, res) {
@@ -8,6 +10,13 @@ module.exports = function getHandlers(queuesRegistry) {
           code: "MISSING_PARAMETERS",
           message: "queueName, queueType or queueSize missing"
         });
+      }
+
+      if(instanceSolver(req.body.queueName)!=process.env.BROKER_HOST){
+        return res.status(400).json({
+          code: "INVALID_INSTANCE",
+          message: `This queue should go against ${instanceSolver(req.body.queueName)}, this is ${process.env.BROKER_HOST}`
+        })
       }
 
       queuesRegistry.addQueue(req.body.queueName, req.body.queueType, req.body.queueSize)
