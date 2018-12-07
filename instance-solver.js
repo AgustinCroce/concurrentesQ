@@ -1,7 +1,7 @@
 "use strict";
 
-const brokerHostName = "broker"
-const brokerSharding = 2
+const brokerHostName = "broker";
+const brokerSharding = parseInt(process.env.NUMBER_OF_SHARDS);
 
 const higherHash = "ffffffffffffffffffffffffffffffff";
 const higherNumber = parseInt(higherHash,16);

@@ -10,6 +10,7 @@ services:
       BROKER_HOST: broker-0
       BROKER_PORT: 1337
       PROCESS_QUEUE_TIME: 5000
+      NUMBER_OF_SHARDS: 2
       API_PORT: 3000
     ports:
       - "3000:3000"
@@ -28,6 +29,7 @@ services:
       BROKER_HOST: broker-1
       BROKER_PORT: 1337
       PROCESS_QUEUE_TIME: 5000
+      NUMBER_OF_SHARDS: 2
       API_PORT: 3000
     ports:
       - "3001:3000"
@@ -43,8 +45,9 @@ services:
     restart: always
     command: npm run publisher
     environment:
-      BROKER_HOST: broker
+      BROKER_HOST: broker-0
       BROKER_PORT: 1337
+      NUMBER_OF_SHARDS: 2
       API_PORT: 3000
       QUEUE: "colita"
     depends_on:
@@ -57,10 +60,11 @@ services:
     restart: always
     command: npm run publisher
     environment:
-      BROKER_HOST: broker
+      BROKER_HOST: broker-1
       BROKER_PORT: 1337
+      NUMBER_OF_SHARDS: 2
       API_PORT: 3000
-      QUEUE: "asdads"
+      QUEUE: "colitajr"
     depends_on:
       - "broker-0"
       - "broker-1"
@@ -74,6 +78,7 @@ services:
       BROKER_HOST: broker
       BROKER_PORT: 1337
       QUEUE: "colita"
+      NUMBER_OF_SHARDS: 2
     depends_on:
       - "broker-0"
       - "broker-1"
@@ -86,7 +91,8 @@ services:
     environment:
       BROKER_HOST: broker
       BROKER_PORT: 1337
-      QUEUE: "asdads"
+      QUEUE: "colitajr"
+      NUMBER_OF_SHARDS: 2
     depends_on:
       - "broker-0"
       - "broker-1"
