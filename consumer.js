@@ -4,7 +4,7 @@ const instanceSolver = require("./instance-solver")
 
 require("dotenv").config();
 const net = require("net"),
-  cola = "colita",
+  cola = process.env.QUEUE,
   client = new net.Socket();
 
 client.on("data", function (buffer) {

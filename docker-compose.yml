@@ -46,6 +46,21 @@ services:
       BROKER_HOST: broker
       BROKER_PORT: 1337
       API_PORT: 3000
+      QUEUE: "colita"
+    depends_on:
+      - "broker-0"
+      - "broker-1"
+  publisher2:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run publisher
+    environment:
+      BROKER_HOST: broker
+      BROKER_PORT: 1337
+      API_PORT: 3000
+      QUEUE: "asdads"
     depends_on:
       - "broker-0"
       - "broker-1"
@@ -58,6 +73,7 @@ services:
     environment:
       BROKER_HOST: broker
       BROKER_PORT: 1337
+      QUEUE: "colita"
     depends_on:
       - "broker-0"
       - "broker-1"
@@ -70,6 +86,7 @@ services:
     environment:
       BROKER_HOST: broker
       BROKER_PORT: 1337
+      QUEUE: "asdads"
     depends_on:
       - "broker-0"
       - "broker-1"

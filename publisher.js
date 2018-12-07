@@ -4,7 +4,7 @@ require('dotenv').config();
 const request = require('request'),
   net = require('net'),
   client = new net.Socket(),
-  cola = "colita",
+  cola = process.env.QUEUE,
   queueCreation = {
     queueName: cola, 
     queueType: "pubsub", 
@@ -58,7 +58,7 @@ function spam() {
     setInterval(() => {
         const spamMessage = {
             type: "publish",
-            message: `mensajito ${i++}`
+            message: `mensajito ${i++} en ${process.env.QUEUE}`
         };
 
         console.log(spamMessage);
