@@ -5,6 +5,7 @@ const Queue = require("./queue");
 class PubSubQueue extends Queue {
   constructor(queueSize) {
     super(queueSize);
+    this.type = "pubsub";
   }
 
   processNextMessageImplementation() {

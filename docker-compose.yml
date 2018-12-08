@@ -1,5 +1,21 @@
 version: '3'
 services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run api
+    environment:
+      NUMBER_OF_SHARDS: 2
+      API_PORT: 3000
+    ports:
+      - "3002:3000"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
   broker-0:
     build:
       context: .

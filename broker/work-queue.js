@@ -5,6 +5,7 @@ const Queue = require("./queue");
 class WorkQueue extends Queue {
   constructor(queueSize) {
     super(queueSize);
+    this.type = "work";
     this.consumerCursor = 0;
   }
 

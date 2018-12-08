@@ -69,19 +69,26 @@ class QueuesRegistry {
     socket.write(JSON.stringify(HANDSHAKE_SUCCESS_MESSAGE));
   }
 
-  addQueue(queueName, queueType, queueSize) {
+  addQueue(name, type, size) {
+    const queue = {
+      name: name,
+      type: type,
+      size: size,
+      broker: process.env.BROKER_HOST
+    };
+    
     return new Promise((resolve, reject) => {
-      if (queueType === "work") {
-        this.addWorkQueue(queueName, queueSize);
-        return resolve();
+      if (type === "work") {
+        this.addWorkQueue(name, size);
+        return resolve(queue);
       }
   
-      if (queueType === "pubsub") {
-        this.addPubSubQueue(queueName, queueSize);
-        return resolve();
+      if (type === "pubsub") {
+        this.addPubSubQueue(name, size);
+        return resolve(queue);
       }
   
-      reject(new Error(`Wrong queue type ${queueType}`));
+      reject(new Error(`Wrong queue type ${type}`));
     });
   }
 
@@ -105,6 +112,25 @@ class QueuesRegistry {
   addPubSubQueue(queueName, queueSize) {
     const pubsubQueue = new PubSubQueue(queueSize);
     this.queues[queueName] = pubsubQueue;
+  }
+
+  getQueueData(queueName) {
+    return new Promise((resolve, reject) => {
+      if (!this.queues.hasOwnProperty(queueName)) {
+        reject(new Error(`Queue not found`));  
+      }
+      
+      const queue = this.queues[queueName];
+      resolve({
+        size: queue.queueSize,
+        type: queue.queueType,
+        publishersConnected: queue.publishers.length,
+        consumersConnected: queue.publishers.length,
+        name: queueName,
+        messages: queue.messages,
+        broker: process.env.BROKER_HOST
+      });
+    });
   }
 }
 

@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "broker": "node broker",
     "consumer": "node consumer.js",
-    "publisher": "node publisher.js"
+    "publisher": "node publisher.js",
+    "api": "node api"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/AgustinCroce/concurrentesQ#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "dotenv": "^6.1.0",
     "express": "^4.16.4",

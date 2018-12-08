@@ -6,9 +6,9 @@ const request = require('request'),
   client = new net.Socket(),
   cola = process.env.QUEUE,
   queueCreation = {
-    queueName: cola, 
-    queueType: "pubsub", 
-    queueSize: 100
+    name: cola, 
+    type: "pubsub", 
+    size: 100
   };
 
 const instanceSolver = require("./instance-solver")
