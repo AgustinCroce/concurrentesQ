@@ -17,20 +17,7 @@ services:
       QUEUE_NAME: "colitajr"
     networks:
      - concurrentesq_net
-  consumer-worker-1:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: npm run consumer
-    environment:
-      BASE_HOST: broker
-      BROKER_PORT: 1337
-      NUMBER_OF_SHARDS: 2
-      REPLICAS_NUMBER: 3
-      QUEUE_NAME: "colitajr"
-    networks:
-     - concurrentesq_net
-  consumer-worker-2:
+  consumer-worker:
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -56,20 +43,7 @@ services:
       QUEUE_NAME: "colita"
     networks:
      - concurrentesq_net
-  consumer-pubsub-1:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: npm run consumer
-    environment:
-      BASE_HOST: broker
-      BROKER_PORT: 1337
-      NUMBER_OF_SHARDS: 2
-      REPLICAS_NUMBER: 3
-      QUEUE_NAME: "colita"
-    networks:
-     - concurrentesq_net
-  consumer-pubsub-2:
+  consumer-pubsub:
     build:
       context: .
       dockerfile: ./Dockerfile
