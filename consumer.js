@@ -1,39 +1,13 @@
 "use strict";
 
-const instanceSolver = require("./instance-solver")
-
 require("dotenv").config();
-const net = require("net"),
-  cola = process.env.QUEUE,
-  client = new net.Socket();
+const QueueClient = require("./queue-client"),
+  client = new QueueClient(process.env.BASE_HOST, process.env.SHARDS_NUMBER, process.env.REPLICAS_NUMBER);
 
-client.on("data", function (buffer) {
-  const message = JSON.parse(buffer.toString());
-
-  if (message.type === "modeRequest") {
-    client.write(JSON.stringify({
-      type: "mode",
-      mode: "consumer",
-      queue: cola
-    }));
-  }
-
-  if (message.type === "handshakeSuccess") {
-    client.removeAllListeners("data");
-    client.on("data", handleMessage);
-  }
-
-  if (message.type === "handshakeError") {
-    console.log("handshake error");
-  }
-});
-
-function handleMessage(buffer) {
-  console.log(JSON.parse(buffer.toString()));
+client.onMessage = function handleMessage(message) {
+  console.log(message);
 }
 
-client.connect(process.env.BROKER_PORT, instanceSolver(cola));
-
-client.on('close', function() {
-	console.log('Connection closed');
-});
+client.connect(process.env.QUEUE_NAME, "consumer")
+  .then(() => console.log("Connected to the broker"))
+  .catch((error) => console.log(error));

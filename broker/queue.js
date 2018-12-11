@@ -1,10 +1,10 @@
 "use strict";
 
 class Queue {
-  constructor(queueSize) {
+  constructor(queueSize, messages = []) {
     this.consumers = [];
     this.publishers = [];
-    this.messages = [];
+    this.messages = messages;
     this.queueSize = queueSize;
   }
 

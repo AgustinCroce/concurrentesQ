@@ -1,0 +1,32 @@
+version: '3'
+networks:
+  concurrentesq_net:
+    external: true
+
+services:
+  publisher:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run publisher
+    environment:
+      BASE_HOST: broker
+      BROKER_PORT: 1337
+      NUMBER_OF_SHARDS: 2
+      REPLICAS_NUMBER: 3
+      QUEUE_NAME: "colitajr"
+    networks:
+     - concurrentesq_net
+  consumer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run consumer
+    environment:
+      BASE_HOST: broker
+      BROKER_PORT: 1337
+      NUMBER_OF_SHARDS: 2
+      REPLICAS_NUMBER: 3
+      QUEUE_NAME: "colitajr"
+    networks:
+     - concurrentesq_net

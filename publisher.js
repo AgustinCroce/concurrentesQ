@@ -1,68 +1,24 @@
 "use strict";
 
-require('dotenv').config();
-const request = require('request'),
-  net = require('net'),
-  client = new net.Socket(),
-  cola = process.env.QUEUE,
-  queueCreation = {
-    name: cola, 
-    type: "pubsub", 
-    size: 100
-  };
+require("dotenv").config();
+const QueueClient = require("./queue-client"),
+  client = new QueueClient(process.env.BASE_HOST, process.env.NUMBER_OF_SHARDS, process.env.REPLICAS_NUMBER);
 
-const instanceSolver = require("./instance-solver")
-
-request.post(`http://${instanceSolver(cola)}:${process.env.API_PORT}/queues`, {json:queueCreation}, startClient);
-
-function startClient(error, response) {
-  if (error || response.statusCode !== 200) {
-    console.log("An error happened when creating the queue");
-    return process.exit(1);
-  }
-  
-  client.on("data", function (buffer) {
-    const message = JSON.parse(buffer.toString());
-
-    if (message.type === "modeRequest") {
-      client.write(JSON.stringify({
-        type: "mode",
-        mode: "publisher",
-        queue: cola
-      }));
-    }
-
-    if (message.type === "handshakeSuccess") {
-      client.removeAllListeners("data");
-      spam();
-    }
-
-    if (message.type === "handshakeError") {
-      console.log("handshake error");
-    }
-
-    if (message.type === "queueMaximumSizeReached") {
-      console.log("Queue full");
-    }
-  });
-  
-  client.connect(process.env.BROKER_PORT, instanceSolver(cola));
-
-  client.on('close', function() {
-	  console.log('Connection closed');
-  });
-}
+client.connect(process.env.QUEUE_NAME, "publisher")
+  .then((s) => {
+    console.log("Connected to the broker");
+    spam();
+  })
+  .catch((error) => console.log(error));
 
 let i = 0;
 function spam() {
-    setInterval(() => {
-        const spamMessage = {
-            type: "publish",
-            message: `mensajito ${i++} en ${process.env.QUEUE}`
-        };
+  setInterval(() => {
+    const spamMessage = {
+      type: "publish",
+      message: `mensajito ${i++} en ${process.env.QUEUE_NAME}`
+    };
 
-        console.log(spamMessage);
-
-        client.write(JSON.stringify(spamMessage))
-    }, 2000);
+    client.publish(spamMessage)
+  }, 350);
 }

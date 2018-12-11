@@ -2,6 +2,7 @@
 
 const WorkQueue = require("./work-queue"),
   PubSubQueue = require("./pubsub-queue"),
+  Replicator = require("./replicator"),
   MODE_MESSAGE = {type: "modeRequest"},
   HANDSHAKE_SUCCESS_MESSAGE = {type: "handshakeSuccess"},
   HANDSHAKE_ERROR_MESSAGE = {type: "handshakeError"};
@@ -9,6 +10,7 @@ const WorkQueue = require("./work-queue"),
 class QueuesRegistry {
   constructor() {
     this.queues = {};
+    this.replicator = new Replicator(this);
   }
 
   handleConnections(socket) {
@@ -29,6 +31,12 @@ class QueuesRegistry {
   }
 
   handleModeMessage(socket, message) {
+    if (!this.isLeader()) {
+      console.log("No soy el lider miguel");
+      socket.write(JSON.stringify(HANDSHAKE_ERROR_MESSAGE));
+      return socket.end();
+    }
+
     switch (message.mode) {
       case "publisher":
         socket.removeAllListeners("data");
@@ -60,6 +68,7 @@ class QueuesRegistry {
   }
 
   addConsumer(queueName, socket) {
+    console.log("Agregando consumer");
     if (!this.queues.hasOwnProperty(queueName)) {
       socket.write(JSON.stringify(HANDSHAKE_ERROR_MESSAGE));
       return socket.end();
@@ -69,7 +78,7 @@ class QueuesRegistry {
     socket.write(JSON.stringify(HANDSHAKE_SUCCESS_MESSAGE));
   }
 
-  addQueue(name, type, size) {
+  addQueue(name, type, size, messages = []) {
     const queue = {
       name: name,
       type: type,
@@ -79,12 +88,12 @@ class QueuesRegistry {
     
     return new Promise((resolve, reject) => {
       if (type === "work") {
-        this.addWorkQueue(name, size);
+        this.addWorkQueue(name, size, messages);
         return resolve(queue);
       }
   
       if (type === "pubsub") {
-        this.addPubSubQueue(name, size);
+        this.addPubSubQueue(name, size, messages);
         return resolve(queue);
       }
   
@@ -104,8 +113,8 @@ class QueuesRegistry {
     });
   }
 
-  addWorkQueue(queueName, queueSize) {
-    const workQueue = new WorkQueue(queueSize);
+  addWorkQueue(queueName, queueSize, messages) {
+    const workQueue = new WorkQueue(queueSize, messages);
     this.queues[queueName] = workQueue;
   }
 
@@ -123,7 +132,7 @@ class QueuesRegistry {
       const queue = this.queues[queueName];
       resolve({
         size: queue.queueSize,
-        type: queue.queueType,
+        type: queue.type,
         publishersConnected: queue.publishers.length,
         consumersConnected: queue.publishers.length,
         name: queueName,
@@ -131,6 +140,19 @@ class QueuesRegistry {
         broker: process.env.BROKER_HOST
       });
     });
+  }
+
+  getQueuesData() {
+    const queuesNames = Object.keys(this.queues);
+    return Promise.all(queuesNames.map(this.getQueueData.bind(this)));
+  }
+
+  updateQueue(queueData) {
+    return this.addQueue(queueData.name, queueData.type, queueData.size, queueData.messages);
+  }
+
+  isLeader() {
+    return this.replicator.isLeader();
   }
 }
 

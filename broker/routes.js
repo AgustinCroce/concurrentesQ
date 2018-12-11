@@ -2,9 +2,20 @@
 
 const instanceSolver = require("../instance-solver")
 
+function isInstance(name, host) {
+  return `${instanceSolver(name)}-${process.env.REPLICA_NUMBER}` != host;
+}
+
 module.exports = function getHandlers(queuesRegistry) {
   return {
     createQueue(req, res) {
+      if (!queuesRegistry.isLeader()) {
+        return res.status(401).json({
+          code: "NOT_LEADER",
+          message: "This instance is not the leader"
+        });
+      }
+
       if (!req.body.name || !req.body.type || !req.body.size) {
         return res.status(400).json({
           code: "MISSING_PARAMETERS",
@@ -12,10 +23,10 @@ module.exports = function getHandlers(queuesRegistry) {
         });
       }
 
-      if (instanceSolver(req.body.name) != process.env.BROKER_HOST){
+      if (isInstance(req.body.name, process.env.BROKER_HOST)) {
         return res.status(400).json({
           code: "INVALID_INSTANCE",
-          message: `This queue should go against ${instanceSolver(req.body.queueName)}, this is ${process.env.BROKER_HOST}`
+          message: `This queue should go against ${instanceSolver(req.body.name)}, this is ${process.env.BROKER_HOST}`
         });
       }
 
@@ -31,7 +42,14 @@ module.exports = function getHandlers(queuesRegistry) {
         });
     },
     removeQueue(req, res) {
-      if (instanceSolver(req.params.queueName) != process.env.BROKER_HOST){
+      if (!queuesRegistry.isLeader()) {
+        return res.status(401).json({
+          code: "NOT_LEADER",
+          message: "This instance is not the leader"
+        });
+      }
+
+      if (isInstance(req.body.name, process.env.BROKER_HOST)) {
         return res.status(400).json({
           code: "INVALID_INSTANCE",
           message: `This queue should go against ${instanceSolver(req.body.queueName)}, this is ${process.env.BROKER_HOST}`
@@ -50,7 +68,14 @@ module.exports = function getHandlers(queuesRegistry) {
         });
     },
     getQueueData(req, res) {
-      if (instanceSolver(req.params.queueName) != process.env.BROKER_HOST){
+      if (!queuesRegistry.isLeader()) {
+        return res.status(401).json({
+          code: "NOT_LEADER",
+          message: "This instance is not the leader"
+        });
+      }
+
+      if (isInstance(req.body.name, process.env.BROKER_HOST)) {
         return res.status(400).json({
           code: "INVALID_INSTANCE",
           message: `This queue should go against ${instanceSolver(req.body.queueName)}, this is ${process.env.BROKER_HOST}`

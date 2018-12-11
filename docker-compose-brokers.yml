@@ -1,0 +1,168 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    command: npm run api
+    environment:
+      NUMBER_OF_SHARDS: 2
+      REPLICAS_NUMBER: 3
+      API_PORT: 3000
+    ports:
+      - "3002:3000"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    networks:
+      - net
+  broker-0-1:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker-0-1
+      REPLICATOR_PORT: 9999
+      REPLICA_NUMBER: 1
+      PEERS: '["broker-0-1:9999", "broker-0-2:9999", "broker-0-3:9999"]'
+      BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 500
+      NUMBER_OF_SHARDS: 2
+      API_PORT: 3000
+      REPLICATOR_TIME: 300
+    ports:
+      - "3000:3000"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    networks:
+      - net
+  broker-0-2:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker-0-2
+      REPLICATOR_PORT: 9999
+      REPLICA_NUMBER: 2
+      PEERS: '["broker-0-1:9999", "broker-0-2:9999", "broker-0-3:9999"]'
+      BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 500
+      NUMBER_OF_SHARDS: 2
+      API_PORT: 3000
+      REPLICATOR_TIME: 300
+    ports:
+      - "3001:3000"
+    networks:
+      - net
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+  broker-0-3:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker-0-3
+      REPLICATOR_PORT: 9999
+      REPLICA_NUMBER: 3
+      PEERS: '["broker-0-1:9999", "broker-0-2:9999", "broker-0-3:9999"]'
+      BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 500
+      NUMBER_OF_SHARDS: 2
+      API_PORT: 3000
+      REPLICATOR_TIME: 300
+    ports:
+      - "3003:3000"
+    networks:
+      - net
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+  broker-1-1:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker-1-1
+      REPLICATOR_PORT: 9999
+      REPLICA_NUMBER: 1
+      PEERS: '["broker-1-1:9999", "broker-1-2:9999", "broker-1-3:9999"]'
+      BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 500
+      NUMBER_OF_SHARDS: 2
+      API_PORT: 3000
+      REPLICATOR_TIME: 300
+    ports:
+      - "3004:3000"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    networks:
+      - net
+  broker-1-2:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker-1-2
+      REPLICATOR_PORT: 9999
+      REPLICA_NUMBER: 2
+      PEERS: '["broker-1-1:9999", "broker-1-2:9999", "broker-1-3:9999"]'
+      BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 500
+      NUMBER_OF_SHARDS: 2
+      API_PORT: 3000
+      REPLICATOR_TIME: 300
+    ports:
+      - "3005:3000"
+    networks:
+      - net
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+  broker-1-3:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run broker
+    environment:
+      BROKER_HOST: broker-1-3
+      REPLICATOR_PORT: 9999
+      REPLICA_NUMBER: 3
+      PEERS: '["broker-1-1:9999", "broker-1-2:9999", "broker-1-3:9999"]'
+      BROKER_PORT: 1337
+      PROCESS_QUEUE_TIME: 500
+      NUMBER_OF_SHARDS: 2
+      API_PORT: 3000
+      REPLICATOR_TIME: 300
+    ports:
+      - "3006:3000"
+    networks:
+      - net
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:3006/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+networks:
+  net:
+    driver: bridge
