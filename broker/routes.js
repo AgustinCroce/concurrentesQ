@@ -49,10 +49,10 @@ module.exports = function getHandlers(queuesRegistry) {
         });
       }
 
-      if (isInstance(req.body.name, process.env.BROKER_HOST)) {
+      if (isInstance(req.params.queueName, process.env.BROKER_HOST)) {
         return res.status(400).json({
           code: "INVALID_INSTANCE",
-          message: `This queue should go against ${instanceSolver(req.body.queueName)}, this is ${process.env.BROKER_HOST}`
+          message: `This queue should go against ${instanceSolver(req.params.queueName)}, this is ${process.env.BROKER_HOST}`
         });
       }
 
@@ -75,10 +75,10 @@ module.exports = function getHandlers(queuesRegistry) {
         });
       }
 
-      if (isInstance(req.body.name, process.env.BROKER_HOST)) {
+      if (isInstance(req.params.queueName, process.env.BROKER_HOST)) {
         return res.status(400).json({
           code: "INVALID_INSTANCE",
-          message: `This queue should go against ${instanceSolver(req.body.queueName)}, this is ${process.env.BROKER_HOST}`
+          message: `This queue should go against ${instanceSolver(req.params.queueName)}, this is ${process.env.BROKER_HOST}`
         });
       }
 

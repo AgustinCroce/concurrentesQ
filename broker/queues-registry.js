@@ -32,7 +32,6 @@ class QueuesRegistry {
 
   handleModeMessage(socket, message) {
     if (!this.isLeader()) {
-      console.log("No soy el lider miguel");
       socket.write(JSON.stringify(HANDSHAKE_ERROR_MESSAGE));
       return socket.end();
     }
@@ -68,7 +67,6 @@ class QueuesRegistry {
   }
 
   addConsumer(queueName, socket) {
-    console.log("Agregando consumer");
     if (!this.queues.hasOwnProperty(queueName)) {
       socket.write(JSON.stringify(HANDSHAKE_ERROR_MESSAGE));
       return socket.end();

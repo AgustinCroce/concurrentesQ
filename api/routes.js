@@ -46,17 +46,6 @@ module.exports = {
     const instance = instanceSolver(req.body.name);
 
     sendHttpToReplicas(instance, "queues", "post", req.body, res);
-
-    // axios.post(`http://${instance}:${process.env.API_PORT}/queues`, req.body)
-    //   .then((response) => {
-    //     res.status(200).json(response.data);
-    //   })
-    //   .catch((error) => {
-    //     return res.status(500).json({
-    //       code: "SERVER_ERROR",
-    //       message: error.message
-    //     })
-    //   });
   },
   removeQueue(req, res) {
     if (!req.params.queueName) {
@@ -68,16 +57,7 @@ module.exports = {
 
     const instance = instanceSolver(req.params.queueName);
 
-    axios.delete(`http://${instance}:${process.env.API_PORT}/queues/${req.params.queueName}`)
-      .then(() => {
-        res.status(200).send();
-      })
-      .catch((error) => {
-        return res.status(500).json({
-          code: "SERVER_ERROR",
-          message: error.message
-        })
-      });
+    sendHttpToReplicas(instance, `queues/${req.params.queueName}`, "delete", null, res);
   },
   getQueueData(req, res) {
     if (!req.params.queueName) {
@@ -89,16 +69,7 @@ module.exports = {
 
     const instance = instanceSolver(req.params.queueName);
 
-    axios.get(`http://${instance}:${process.env.API_PORT}/queues/${req.params.queueName}`)
-      .then((response) => {
-        res.status(200).send(response.data);
-      })
-      .catch((error) => {
-        return res.status(500).json({
-          code: "SERVER_ERROR",
-          message: error.message
-        })
-      });
+    sendHttpToReplicas(instance, `queues/${req.params.queueName}`, "get", null, res);
   },
   healthCheck(req, res) {
     res.status(200).json({status: 'UP'});
